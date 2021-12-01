@@ -1,0 +1,28 @@
+// Declare variables
+String incoming;
+float vo;
+float vi;
+
+float voant=0;
+float fc=1/5.5;
+float RC=1/(2*3.1416*fc);
+float T=0.15;
+
+void setup(){
+  Serial.begin(9600);
+  Serial.setTimeout(3);
+}
+
+void loop(){
+  if (Serial.available() > 0) {
+    incoming = Serial.readString();
+    vi=incoming.toFloat(); 
+    vo=(T/RC)*vi+(1-T/RC)*voant; 
+    
+    int vo2=(vo*10000.0);
+    float vo3=float(vo2)/10000;
+    Serial.println(vo3);
+    voant=vo3;
+    
+  }
+}

@@ -1,0 +1,61 @@
+% Connectar al serial port
+s = serial('COM5', 'BaudRate', 9600);
+fopen(s);
+pause(3);
+fprintf("Connection established\n")
+
+theta=0:0.003:2*pi;
+k=1;
+%borrar grafica anterior
+delete(gca);
+%vectores iniciales
+time = 0;
+vout= 0;
+vin=0;
+%y minimo y y maximo
+min = -1.5;                       
+max = 1.5;
+
+
+% Start a counter and timer
+count = 0;
+tic
+startTimer = toc;
+
+while (toc < startTimer+30)
+  
+  vi=sin(pi*theta(k)*5)+0.1*sin(pi*100*theta(k));
+  fprintf(s,vi);
+  k=k+1;
+  % Incrementar contadores y guardar en vectores
+  count = count + 1;
+  vout(count) = fscanf(s,'%f\n');
+  time(count) = toc; 
+  vin(count)=vi;
+  if k==length(theta)
+      k=1;
+  end
+         %grafico Vin
+         plot(time, vin, '-r');
+        hold on;
+         %grafico Vout
+         plot(time, vout, '-b') ;
+         %set up plot
+         title('Filtro paso bajo','FontSize',15);
+         xlabel('time (s)','FontSize',15);
+         ylabel('x(t)','FontSize',15);
+         legend('Vin', 'Vout');
+         grid('on');
+         axis([0 time(count) min max]);
+         hold off
+          
+          pause(0.001);  
+end
+
+endTimer = toc;
+frequency=count/(endTimer - startTimer);
+
+%adios 
+fclose(s);
+delete(s);
+clear s
